@@ -124,7 +124,7 @@ radius = 10
 step_size = 18
 
 # Click adjustment
-click_offset = 1
+click_offset = 8
 
 # Last clicked region
 last_x = 0
