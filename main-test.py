@@ -52,6 +52,27 @@ def contains_white_or_red(region):
 
     return rp
 
+# TODO : Experimental red only detect
+def detect_red(region, red_threshold=100, green_threshold=50, blue_threshold=50):
+    """
+    Detects if an region contains any shade of red.
+    
+    Parameters:
+    region (numpy.ndarray): RGB region array with shape (height, width, 3).
+    red_threshold (int): Threshold for the red channel.
+    green_threshold (int): Threshold for the green channel.
+    blue_threshold (int): Threshold for the blue channel.
+
+    Returns:
+    bool: True if red is detected, False otherwise.
+    """
+    red_pixels = np.logical_and.reduce((
+        region[:, :, 0] > red_threshold,
+        region[:, :, 0] > region[:, :, 1] + green_threshold,
+        region[:, :, 0] > region[:, :, 2] + blue_threshold
+    ))
+    return np.any(red_pixels)
+
 # Function to check if x and y are within np array of shape (y, x, ...) bounds
 def is_within_bounds(y, x, np_array):
     if 0 <= y < np_array.shape[0] and 0 <= x < np_array.shape[1]:
@@ -97,18 +118,19 @@ start_x, start_y, end_x, end_y = draw_rectangle()
 area = (start_x, start_y, end_x, end_y)
 
 # pixel search radius
-radius = 8
+radius = 10
 
 # Step size for search
-step_size = 14
+step_size = 18
 
 # Click adjustment
-click_offset = 5
+click_offset = 1
 
 # Last clicked region
 last_x = 0
 last_y = 0
-last_xy_radius = 20
+last_x_radius = 20
+last_y_radius = 40
 
 while True:
     # Capture initial screenshot
@@ -129,7 +151,7 @@ while True:
         for y in range(0, initial_array.shape[0], step_size):
             # Get the pixel at (x, y) in both images
             if is_within_bounds(y + radius, x + radius, initial_array):
-                if (y < last_y - last_xy_radius or y > last_y + last_xy_radius) and (x < last_x - last_xy_radius or x > last_x + last_xy_radius):
+                if (y < last_y - last_y_radius or y > last_y + last_y_radius) and (x < last_x - last_x_radius or x > last_x + last_x_radius):
                     # Get a range of pixels radius x radius
                     initial_pixel_range = initial_array[y:y+radius, x:x+radius]
                     current_pixel_range = current_array[y:y+radius, x:x+radius]
@@ -137,12 +159,13 @@ while True:
                     unequal_elements = initial_pixel_range != current_pixel_range
 
                     if np.all(unequal_elements):
-                        if contains_white_or_red(current_pixel_range):
+                        #if contains_white_or_red(current_pixel_range):
+                        if detect_red(current_pixel_range):
                             print("Contains red/white")
                             break
                         print(f"Pixel threshold reached at ({x}, {y})")
-                        pyautogui.moveTo(start_x + x + click_offset, start_y + y + click_offset)
-                        pyautogui.click()
+                        #pyautogui.moveTo(start_x + x + click_offset, start_y + y + click_offset)
+                        pyautogui.click(x=start_x + x + click_offset, y=start_y + y + click_offset)
                         #pyautogui.moveTo(10,10)
                         last_x = x
                         last_y = y
