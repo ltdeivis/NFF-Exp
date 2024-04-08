@@ -9,48 +9,17 @@ import matplotlib.pyplot as plt
 
 # TODO : Somehow this function isn't stopping red 'miss' text from being clicked
 # Function to check if region contains white / red
-def contains_white_or_red(region):
-    # RGB Thresholds
-    white_threshold = 185
-    red_threshold = 150
-
-    # Extract red and green channels
-    red_channel = region[:,:,0]
-    green_channel = region[:,:,1]
-    blue_channel = region[:,:,2]
-
-    # Check if any pixel is white or red
-    #white_pixels = (red_channel > white_threshold) & (green_channel > white_threshold) & (blue_channel > white_threshold)
-    #red_pixels = (red_channel > red_threshold) & (green_channel < 64) & (blue_channel < 45)
+def detect_white(image, threshold=200):
+    # Check if all RGB values are above the threshold
+    white_pixels = np.all(image > threshold, axis=-1)
     
-    rp = False
+    # Check if at least some of the RGB values are close to each other
+    close_together = np.abs(np.diff(image, axis=-1)).max(axis=-1) < 25
     
-    x_shape, y_shape = red_channel.shape
-    for x in range(x_shape):
-        for y in range(y_shape):
-            r_px = red_channel[x, y]
-            g_px = green_channel[x, y]
-            b_px = blue_channel[x, y]
-
-            # For white check
-            rg_df = np.abs(r_px - g_px)
-            rb_df = np.abs(r_px - b_px)
-            if not (rg_df > 15 or rb_df > 15):
-                rp = True
-                break
-
-            #print(f"rgb=({r_px},{g_px},{b_px})")
-            if ((r_px - g_px) > 95) and ((r_px - b_px) > 95):
-                if r_px > 120 and g_px < 85 and b_px < 85:
-                    rp = True
-                    break
-        if rp:
-            print("rp true")
-            break
-        else:
-            print("rp false")
-
-    return rp
+    # Combine the two conditions
+    white_region = np.logical_and(white_pixels, close_together)
+    
+    return np.any(white_region)
 
 # TODO : Experimental red only detect
 def detect_red(region, red_threshold=100, green_threshold=50, blue_threshold=50):
@@ -160,16 +129,15 @@ while True:
 
                     if np.all(unequal_elements):
                         #if contains_white_or_red(current_pixel_range):
-                        if detect_red(current_pixel_range):
+                        if detect_red(current_pixel_range) or detect_white(current_pixel_range):
                             print("Contains red/white")
                             break
-                        print(f"Pixel threshold reached at ({x}, {y})")
-                        #pyautogui.moveTo(start_x + x + click_offset, start_y + y + click_offset)
-                        pyautogui.click(x=start_x + x + click_offset, y=start_y + y + click_offset)
-                        #pyautogui.moveTo(10,10)
-                        last_x = x
-                        last_y = y
-                        change_found = True
-                        break
+                        else:
+                            print(f"Pixel threshold reached at ({x}, {y})")
+                            pyautogui.click(x=start_x + x + click_offset, y=start_y + y + click_offset)
+                            last_x = x
+                            last_y = y
+                            change_found = True
+                            break
         if change_found:
             break
