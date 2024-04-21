@@ -24,6 +24,9 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+./obj/*
+./player_dataset/*
+./shuffled_images/*
 MANIFEST
 
 # PyInstaller
