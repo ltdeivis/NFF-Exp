@@ -9,8 +9,41 @@ from multiprocessing import Process, Queue
 from PIL import ImageGrab
 from pynput.mouse import Listener
 
-import ctypes
-from ctypes import windll
+# ====== Skill Keybinds =======
+
+# -- CLAN KEYBINDS --
+OjouGrabKey='p'
+
+# -- TAI KEYBINDS --
+NormalGrabKey='shift+p'
+SuplexKey='ctrl+p'
+LariatKey='alt+p'
+GuilotineKey='o'
+NormalPunchKey='space'
+RockSmashKey='u'
+
+# -- NIN KEYBINDS --
+BoulderKey='shift+o'
+AoeSpikeKey='alt+o'
+SpikeKey='ctrl+o'
+ColumnSpikeKey='ctrl+i'
+EarthWallKey='shift+u'
+SwampUnderworldKey='ctrl+u'
+SwampBramblesKey='alt+u'
+RiverKey='ctrl+j'
+AntLionKey='alt+j'
+
+# -- SPAM KEYBINDS --
+FlickerSettings=('i', 2) # every 2s
+# - TOGLE -
+CloneTrickSettings=('shift+i', 8) # every 8s
+CloneSettings=('k', 10)        # every 10s  
+HealthSwapKey='shift+j'    # Turn off 1x1 radius melee moves until this is used then untoggle and turn on melee
+
+# -- GENERAL KEYBINDS --
+BlockKey='x'
+StruggleKey='b'
+AlternateJutsu='r' # Some jutsus have different forms when alternate key is held while using the jutsu key
 
 def get_default_set(x,y,w,h):
     # Top left, top right, bottom left, bottom right
@@ -95,10 +128,131 @@ def draw_rectangle():
 
 pyautogui.useImageNotFoundException()
 
+def move_spam_thread():
+    global CloneTrickSettings
+    global CloneSettings
+
+    CloneTrickKey, CloneTrickCD = CloneTrickSettings
+    CloneKey, CloneCD = CloneSettings
+
+    CloneTrickLastUsed=0
+    CloneLastUsed=0
+
+    print("MoveSpammer: thread started")
+
+    while True:
+        if (time.time() - CloneTrickLastUsed) > CloneTrickCD:
+            keyboard.press_and_release(CloneTrickKey)
+            CloneTrickLastUsed = time.time()
+            time.sleep(0.05)
+        if (time.time() - CloneLastUsed) > CloneCD:
+            keyboard.press_and_release(CloneKey)
+            CloneLastUsed = time.time()
+            time.sleep(0.05)
+        
+        time.sleep(1)
+
+def flicker_spam_thread():
+    global FlickerSettings
+
+    FlickerKey, FlickerCD = FlickerSettings
+
+    print("FlickerSpammer: thread started")
+
+    while True:
+        keyboard.press_and_release(FlickerKey)
+        time.sleep(FlickerCD)
+
+def teleport_and_spike():
+    # Double click -> Block -> Single spike
+    pyautogui.click(clicks=2)
+    time.sleep(0.03)
+    keyboard.press_and_release(NormalPunchKey)
+    # time.sleep(0.05)
+    # keyboard.press_and_release(NormalPunchKey)
+    time.sleep(0.03)
+    keyboard.press_and_release(SpikeKey)
+    time.sleep(0.03)
+    keyboard.press_and_release(SpikeKey)
+
 if __name__ == '__main__':
+    # MOVE SPAM PROCESS
+    MoveSpammer=Process(target=move_spam_thread)
+    IsMoveSpammerOn=False
+    
+    # FLICKER SPAM PROCESS
+    FlickerSpammer=Process(target=flicker_spam_thread)
+    IsFlickerSpammerOn=False
+
+    # ======= MOVE ROTATION ARRAYS =========
+    # Single item in list : (Fun, Args as dict)
+    # For keypresses, Fun - keyboard.press_and_release, Args = {'hotkey': Keybind}
+    # For MouseClicks, Fun - pyautogui.click, args={'x': X, 'y': Y, 'clicks': 2}
+    # for func, kwargs in list:
+    #   func(**kwargs)
+
+    # AOE Spike ->  DoubleClick + Block + SingleSpike -> ColumnSpike
+    SpikeCombo=[0, (keyboard.press_and_release, {'hotkey' : AoeSpikeKey}), (teleport_and_spike,{}), (keyboard.press_and_release, {'hotkey': ColumnSpikeKey})]
+    SpikeComboCounter=1
+    SpikeMaxComboCounter=len(SpikeCombo)-1
+
+    # Ojou grab off cd, index 0 is ojou cd, the rest are random moves to use
+    MeleeCombo=[0, (keyboard.press_and_release, {'hotkey' : RockSmashKey}), (keyboard.press_and_release, {'hotkey': GuilotineKey}), 
+                   (keyboard.press_and_release, {'hotkey': LariatKey}), (keyboard.press_and_release, {'hotkey': NormalGrabKey}),
+                   (keyboard.press_and_release, {'hotkey': NormalPunchKey})]
+    MeleeComboCounter=1
+    MeleeComboMaxCounter=len(MeleeCombo)-1
+
+    # On key release events
+    def on_key_release(event):
+        if event.name == 'e':
+            global SpikeCombo
+            global SpikeComboCounter
+            global SpikeMaxComboCounter
+            global IsMoveSpammerOn
+            global MoveSpammer
+            global IsFlickerSpammerOn
+            global FlickerSpammer
+
+            # Check time
+            if (time.time() - SpikeCombo[0]) > 5.0:
+                SpikeComboCounter = 1
+
+            if SpikeComboCounter > SpikeMaxComboCounter:
+                SpikeComboCounter = 1
+
+            fun, kwargs = SpikeCombo[SpikeComboCounter]
+            fun(**kwargs)
+            time.sleep(0.03)
+            fun(**kwargs)
+            SpikeComboCounter+=1
+            SpikeCombo[0] = time.time()
+        elif event.name == 'g':
+            if IsMoveSpammerOn:
+                print("MoveSpammer: Killing thread")
+                MoveSpammer.kill()
+                MoveSpammer.join()
+            else:
+                print("MoveSpammer: starting thread")
+                MoveSpammer.start()
+            IsMoveSpammerOn=not IsMoveSpammerOn
+        elif event.name == 'h':
+            if IsFlickerSpammerOn:
+                print("FlickerSpammer: Killing thread")
+                FlickerSpammer.kill()
+                FlickerSpammer.join()
+            else:
+                print("FlickerSpammer: starting thread")
+                FlickerSpammer.start()
+            IsFlickerSpammerOn=not IsFlickerSpammerOn
+
+
+    # hook to all key release events
+    keyboard.on_release(on_key_release)
+
     # Tile radius around user to search for
     radius=1
-
+    pyautogui.click()
     print("Starting main loop...")
     print("Press F7 to draw position for character tile")
     print("Press F5 to begin, or F6 to exit")
@@ -154,7 +308,6 @@ if __name__ == '__main__':
                 tile_center_y = base_h / 2
 
                 KeepRunning=True
-
                 while KeepRunning:
                     # DBEUG
                     # keyboard.press_and_release('1')
@@ -166,15 +319,26 @@ if __name__ == '__main__':
                     for TileInfo in DefaultSet:
                         TileSet, x, y = TileInfo
                         if target_check(Image, TileSet):
-                            keyboard.press_and_release('5')
-                            time.sleep(5.65)
-                            keyboard.press_and_release('4')
+                            # OJO Grab is 37s cd
+                            if time.time() - MeleeCombo[0] > 37.0:
+                                # Ojou grab off cd == use
+                                keyboard.press_and_release(OjouGrabKey)
+                                time.sleep(5.65)
+                                keyboard.press_and_release(SuplexKey)
 
-                            # TODO : If ojo grab used, wait for rough cooldown before using again
-                            # Meanwhile use instant jutsu instead like taijutsu / normal grab (since it has lower cd)
-                            # choose random move from a instant move set/array to use
+                                # Start ojou grab CD
+                                MeleeCombo[0] = time.time()
+                            else:
+                                # Use other moves in rotation
+                                if MeleeComboCounter > MeleeComboMaxCounter:
+                                    MeleeComboCounter = 1
 
-                            #KeepRunning=False
+                                fun, kwargs = MeleeCombo[MeleeComboCounter]
+                                fun(**kwargs)
+                                time.sleep(0.03)
+                                fun(**kwargs)
+                                MeleeComboCounter+=1
+
                             break
 
     
