@@ -171,13 +171,11 @@ def flicker_spam_thread():
 def teleport_and_spike():
     # Double click -> Block -> Single spike
     pyautogui.click(clicks=2)
-    time.sleep(0.03)
+    time.sleep(0.02)
     keyboard.press_and_release(NormalPunchKey)
-    # time.sleep(0.05)
-    # keyboard.press_and_release(NormalPunchKey)
-    time.sleep(0.03)
+    time.sleep(0.02)
     keyboard.press_and_release(SpikeKey)
-    time.sleep(0.03)
+    time.sleep(0.02)
     keyboard.press_and_release(SpikeKey)
 
 def dagger_slash_combo():
@@ -193,6 +191,15 @@ def alternate_jutsu(JutsuKey):
     keyboard.press_and_release(JutsuKey)
     time.sleep(0.05)
     keyboard.release(AlternateJutsu)
+
+def flicker_block_jutsu(JutsuKey):
+    pyautogui.click(clicks=2)
+    time.sleep(0.02)
+    keyboard.press_and_release(NormalPunchKey)
+    time.sleep(0.02)
+    keyboard.press_and_release(JutsuKey)
+    time.sleep(0.02)
+    keyboard.press_and_release(JutsuKey)
 
 
 if __name__ == '__main__':
@@ -226,8 +233,8 @@ if __name__ == '__main__':
     MeleeComboMaxCounter=len(MeleeCombo)-1
 
     # Aoe / CC moves
-    AoeCombo=[0, (keyboard.press_and_release, {'hotkey' : SwampUnderworldKey}), (keyboard.press_and_release, {'hotkey': SwampBramblesKey}), 
-                 (keyboard.press_and_release, {'hotkey': RiverKey})]
+    AoeCombo=[0, (flicker_block_jutsu, {'JutsuKey' : SwampUnderworldKey}), (flicker_block_jutsu, {'JutsuKey': SwampBramblesKey}), 
+                 (flicker_block_jutsu, {'JutsuKey': RiverKey})]
     AoeComboCounter=1
     AoeComboMaxCounter=len(AoeCombo)-1
 
@@ -360,7 +367,7 @@ if __name__ == '__main__':
                             # Ojou grab off cd == use
                             keyboard.press_and_release(OjouGrabKey)
                             time.sleep(5.65)
-                            keyboard.press_and_release(ConquinaKey)
+                            keyboard.press_and_release(LigerBombKey)
 
                             # Start ojou grab CD
                             MeleeCombo[0] = time.time()
