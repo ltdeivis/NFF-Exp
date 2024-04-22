@@ -11,8 +11,17 @@ from pynput.mouse import Listener
 # -- CLAN KEYBINDS --
 QueenBeeKey='p'
 BeeBomb='shift+m'
-BeeHive='ctrl+m'
 ExplosiveFlower='alt+m'
+#-- Spam
+BeeHive='ctrl+m'
+Swarm='y'
+Stinger='shift+y'
+#-- Aoe
+HoneySpray='ctrl+y'
+HidingMole='alt+y'
+InkTiger='n'
+InkDragon='shift+n'
+InkSnakes='ctrl+n'
 
 # -- TAI KEYBINDS --
 NormalGrabKey='shift+p'
@@ -232,7 +241,7 @@ if __name__ == '__main__':
 
     # Aoe / CC moves
     AoeCombo=[0, (keyboard.press_and_release, {'hotkey' : SwampUnderworldKey}), (keyboard.press_and_release, {'hotkey': SwampBramblesKey}), 
-                 (keyboard.press_and_release, {'hotkey': RiverKey})]
+                 (keyboard.press_and_release, {'hotkey': RiverKey}), (alternate_jutsu, {'JutsuKey': PlanetaryOrbKey})]
     AoeComboCounter=1
     AoeComboMaxCounter=len(AoeCombo)-1
 
@@ -363,29 +372,29 @@ if __name__ == '__main__':
                 Image = ImageGrab.grab()
 
                     # Check every tile target regions and do shit once found
-                    for TileInfo in DefaultSet:
-                        TileSet, x, y = TileInfo
-                        if target_check(Image, TileSet):
-                            # OJO Grab is 37s cd
-                            # if time.time() - MeleeCombo[0] > 37.0:
-                            #     # Ojou grab off cd == use
-                            #     keyboard.press_and_release(OjouGrabKey)
-                            #     time.sleep(5.65)
-                            #     keyboard.press_and_release(SuplexKey)
+                for TileInfo in DefaultSet:
+                    TileSet, x, y = TileInfo
+                    if target_check(Image, TileSet):
+                        # OJO Grab is 37s cd
+                        # if time.time() - MeleeCombo[0] > 37.0:
+                        #     # Ojou grab off cd == use
+                        #     keyboard.press_and_release(OjouGrabKey)
+                        #     time.sleep(5.65)
+                        #     keyboard.press_and_release(SuplexKey)
 
-                            #     # Start ojou grab CD
-                            #     MeleeCombo[0] = time.time()
-                            # else:
-                            # Use other moves in rotation
-                            if MeleeComboCounter > MeleeComboMaxCounter:
-                                MeleeComboCounter = 1
+                        #     # Start ojou grab CD
+                        #     MeleeCombo[0] = time.time()
+                        # else:
+                        # Use other moves in rotation
+                        if MeleeComboCounter > MeleeComboMaxCounter:
+                            MeleeComboCounter = 1
 
-                            fun, kwargs = MeleeCombo[MeleeComboCounter]
-                            fun(**kwargs)
-                            time.sleep(0.03)
-                            fun(**kwargs)
-                            MeleeComboCounter+=1
-                            break
+                        fun, kwargs = MeleeCombo[MeleeComboCounter]
+                        fun(**kwargs)
+                        time.sleep(0.03)
+                        fun(**kwargs)
+                        MeleeComboCounter+=1
+                        break
 
     
     print("Script closed")
