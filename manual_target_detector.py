@@ -1,11 +1,8 @@
 import pyautogui
 import time
 import keyboard
-import win32gui
-import win32con
-import win32api
 import numpy as np
-from multiprocessing import Process, Queue
+from multiprocessing import Process
 from PIL import ImageGrab
 from pynput.mouse import Listener
 
@@ -21,6 +18,9 @@ LariatKey='alt+p'
 GuilotineKey='o'
 NormalPunchKey='space'
 RockSmashKey='u'
+ConquinaKey='shift+k'
+LigerBombKey='ctrl+k'
+HorizontalChopKey='alt+k'
 
 # -- NIN KEYBINDS --
 BoulderKey='shift+o'
@@ -32,6 +32,12 @@ SwampUnderworldKey='ctrl+u'
 SwampBramblesKey='alt+u'
 RiverKey='ctrl+j'
 AntLionKey='alt+j'
+MoveStopperKey='j'
+RockCollisionKey='l'
+RockCoffinKey='shift+l'
+PlanetaryOrbKey='alt+l'
+EarthDragonKey='ctrl+l'
+StoneDragonKey='m'
 
 # -- SPAM KEYBINDS --
 FlickerSettings=('i', 2) # every 2s
@@ -77,7 +83,6 @@ def target_check(Image, PixelSet):
             continue
             
     return False
-
 
 # Function to get coordinates of surounding tiles
 # Including start tile
@@ -175,6 +180,21 @@ def teleport_and_spike():
     time.sleep(0.03)
     keyboard.press_and_release(SpikeKey)
 
+def dagger_slash_combo():
+    keyboard.press_and_release(NormalPunchKey)
+    time.sleep(0.01)
+    keyboard.press_and_release(NormalPunchKey)
+    time.sleep(0.01)
+    keyboard.press_and_release(NormalPunchKey)
+    time.sleep(0.01)
+
+def alternate_jutsu(JutsuKey):
+    keyboard.press(AlternateJutsu)
+    keyboard.press_and_release(JutsuKey)
+    time.sleep(0.05)
+    keyboard.release(AlternateJutsu)
+
+
 if __name__ == '__main__':
     # MOVE SPAM PROCESS
     MoveSpammer=Process(target=move_spam_thread)
@@ -199,7 +219,7 @@ if __name__ == '__main__':
     # Ojou grab off cd, index 0 is ojou cd, the rest are random moves to use
     MeleeCombo=[0, (keyboard.press_and_release, {'hotkey' : RockSmashKey}), (keyboard.press_and_release, {'hotkey': GuilotineKey}), 
                    (keyboard.press_and_release, {'hotkey': LariatKey}), (keyboard.press_and_release, {'hotkey': NormalGrabKey}),
-                   (keyboard.press_and_release, {'hotkey': NormalPunchKey})]
+                   (keyboard.press_and_release, {'hotkey': SuplexKey}), (dagger_slash_combo, {}), (keyboard.press_and_release, {'hotkey': ConquinaKey})]
     MeleeComboCounter=1
     MeleeComboMaxCounter=len(MeleeCombo)-1
 
@@ -324,7 +344,7 @@ if __name__ == '__main__':
                                 # Ojou grab off cd == use
                                 keyboard.press_and_release(OjouGrabKey)
                                 time.sleep(5.65)
-                                keyboard.press_and_release(SuplexKey)
+                                keyboard.press_and_release(ConquinaKey)
 
                                 # Start ojou grab CD
                                 MeleeCombo[0] = time.time()
