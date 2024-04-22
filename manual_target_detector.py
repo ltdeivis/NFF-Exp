@@ -9,7 +9,10 @@ from pynput.mouse import Listener
 # ====== Skill Keybinds =======
 
 # -- CLAN KEYBINDS --
-OjouGrabKey='p'
+QueenBeeKey='p'
+BeeBomb='shift+m'
+BeeHive='ctrl+m'
+ExplosiveFlower='alt+m'
 
 # -- TAI KEYBINDS --
 NormalGrabKey='shift+p'
@@ -54,9 +57,9 @@ AlternateJutsu='r' # Some jutsus have different forms when alternate key is held
 def get_default_set(x,y,w,h):
     # Top left, top right, bottom left, bottom right
     Pixels=[(x,y), (x+1,y), (x+2, y), (x,y+1), (x,y+2), 
-            (x+w,y), (x+w-1,y), (x+w-2,y), (x+w,y+1), (x+w,y+2), 
+            (x+w-1,y), (x+w-2,y), (x+w-3,y), (x+w-1,y+1), (x+w-1,y+2), 
             (x,y+h),(x,y+h-1),(x,y+h-2),(x+1,y+h),(x+2,y+h), 
-            (x+w,y+h),(x+w-1,y+h),(x+w-2,y+h),(x+w,y+h-1),(x+w,y+h-2)]
+            (x+w-1,y+h),(x+w-2,y+h),(x+w-3,y+h),(x+w-1,y+h-1),(x+w-1,y+h-2)]
     return Pixels
 
 def get_transition_set(x,y,w,h):
@@ -76,7 +79,7 @@ def target_check(Image, PixelSet):
             YellowPixels+=1
         else:
             continue
-        
+
         if YellowPixels > 10:
             return True
         else:
@@ -219,7 +222,9 @@ if __name__ == '__main__':
     # Ojou grab off cd, index 0 is ojou cd, the rest are random moves to use
     MeleeCombo=[0, (keyboard.press_and_release, {'hotkey' : RockSmashKey}), (keyboard.press_and_release, {'hotkey': GuilotineKey}), 
                    (keyboard.press_and_release, {'hotkey': LariatKey}), (keyboard.press_and_release, {'hotkey': NormalGrabKey}),
-                   (keyboard.press_and_release, {'hotkey': SuplexKey}), (dagger_slash_combo, {}), (keyboard.press_and_release, {'hotkey': ConquinaKey})]
+                   (keyboard.press_and_release, {'hotkey': SuplexKey}), (dagger_slash_combo, {}), (keyboard.press_and_release, {'hotkey': ConquinaKey}),
+                   (keyboard.press_and_release, {'hotkey': LigerBombKey}), (keyboard.press_and_release, {'hotkey': HorizontalChopKey}),
+                   (keyboard.press_and_release, {'hotkey': ConquinaKey})]
     MeleeComboCounter=1
     MeleeComboMaxCounter=len(MeleeCombo)-1
 
@@ -316,8 +321,11 @@ if __name__ == '__main__':
 
                 #     # Check target for each tile
                 #     area_img = ImageGrab.grab(bbox=(tile_x,tile_y,tile_x+base_w,tile_y+base_h))
-                #     # IsTarget = target_check(Tile_DefaultSet)
-                #     print(f'TILE {tile_x}, {tile_y}, {base_w}, {base_h};  {dx}:{dy};')
+                #     Image = ImageGrab.grab()
+                #     IsTarget = False
+                #     if dx == -1 and dy == -1:
+                #         IsTarget = target_check(Image,Tile_DefaultSet)
+                #     print(f'TILE {tile_x}, {tile_y}, {base_w}, {base_h};  {dx}:{dy}; -- {IsTarget}')
 
 
                 #     # Save image for DEBUG
@@ -360,7 +368,6 @@ if __name__ == '__main__':
                             time.sleep(0.03)
                             fun(**kwargs)
                             MeleeComboCounter+=1
-
                             break
 
     
