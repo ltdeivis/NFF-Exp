@@ -10,12 +10,12 @@ from pynput.mouse import Listener
 
 # -- CLAN KEYBINDS --
 QueenBeeKey='p'
-BeeBomb='shift+m'
 ExplosiveFlower='alt+m'
 #-- Spam
-BeeHive='ctrl+m'
-Swarm='y'
-Stinger='shift+y'
+BeeHiveSettings=('ctrl+m', 15)
+SwarmSettings=('y', 16)
+StingerSettings=('shift+y', 16.5)
+BeeBombSettings=('shift+m', 20)
 #-- Aoe
 HoneySpray='ctrl+y'
 HidingMole='alt+y'
@@ -148,12 +148,24 @@ pyautogui.useImageNotFoundException()
 def move_spam_thread():
     global CloneTrickSettings
     global CloneSettings
+    global BeeHiveSettings
+    global SwarmSettings
+    global StingerSettings
+    global BeeBombSettings
 
     CloneTrickKey, CloneTrickCD = CloneTrickSettings
     CloneKey, CloneCD = CloneSettings
+    BeeHiveKey, BeeHiveCD = BeeHiveSettings
+    SwarmKey, SwarmCD = SwarmSettings 
+    StingerKey, StingerCD = StingerSettings  
+    BeeBombKey, BeeBombCD = BeeBombSettings
 
     CloneTrickLastUsed=0
     CloneLastUsed=0
+    BeeHiveLastUsed=0
+    SwarmLastUsed=0
+    StingerLastUsed=0
+    BeeBombLastUsed=0
 
     print("MoveSpammer: thread started")
 
@@ -165,6 +177,22 @@ def move_spam_thread():
         if (time.time() - CloneLastUsed) > CloneCD:
             keyboard.press_and_release(CloneKey)
             CloneLastUsed = time.time()
+            time.sleep(0.05)
+        if (time.time() - BeeHiveLastUsed) > BeeHiveCD:
+            keyboard.press_and_release(BeeHiveKey)
+            BeeHiveLastUsed = time.time()
+            time.sleep(0.05)
+        if (time.time() - SwarmLastUsed) > SwarmCD:
+            keyboard.press_and_release(SwarmKey)
+            SwarmLastUsed = time.time()
+            time.sleep(0.05)
+        if (time.time() - StingerLastUsed) > StingerCD:
+            keyboard.press_and_release(StingerKey)
+            StingerLastUsed = time.time()
+            time.sleep(0.05)
+        if (time.time() - BeeBombLastUsed) > BeeBombCD:
+            keyboard.press_and_release(BeeBombKey)
+            BeeBombLastUsed = time.time()
             time.sleep(0.05)
         
         time.sleep(1)
@@ -233,7 +261,8 @@ if __name__ == '__main__':
     #   func(**kwargs)
 
     # AOE Spike ->  DoubleClick + Block + SingleSpike -> ColumnSpike
-    SpikeCombo=[0, (keyboard.press_and_release, {'hotkey' : AoeSpikeKey}), (teleport_and_spike,{}), (keyboard.press_and_release, {'hotkey': ColumnSpikeKey})]
+    SpikeCombo=[0, (keyboard.press_and_release, {'hotkey' : AoeSpikeKey}),(keyboard.press_and_release, {'hotkey' : RockCoffinKey}), (teleport_and_spike,{}),
+                (keyboard.press_and_release, {'hotkey' : SwampBramblesKey}), (keyboard.press_and_release, {'hotkey': ColumnSpikeKey})]
     SpikeComboCounter=1
     SpikeMaxComboCounter=len(SpikeCombo)-1
 
@@ -247,8 +276,9 @@ if __name__ == '__main__':
     MeleeComboMaxCounter=len(MeleeCombo)-1
 
     # Aoe / CC moves
-    AoeCombo=[0, (keyboard.press_and_release, {'hotkey' : SwampUnderworldKey}), (keyboard.press_and_release, {'hotkey': SwampBramblesKey}), 
-                 (keyboard.press_and_release, {'hotkey': RiverKey}), (alternate_jutsu, {'JutsuKey': PlanetaryOrbKey})]
+    AoeCombo=[0, (flicker_block_jutsu, {'JutsuKey' : SwampUnderworldKey}), (flicker_block_jutsu, {'JutsuKey': SwampBramblesKey}), 
+                 (flicker_block_jutsu, {'JutsuKey': RiverKey}), (alternate_jutsu, {'JutsuKey': PlanetaryOrbKey}), (flicker_block_jutsu, {'JutsuKey': ExplosiveFlower}),
+                 (flicker_block_jutsu, {'JutsuKey': HoneySpray})]
     AoeComboCounter=1
     AoeComboMaxCounter=len(AoeCombo)-1
 
@@ -383,24 +413,24 @@ if __name__ == '__main__':
                     TileSet, x, y = TileInfo
                     if target_check(Image, TileSet):
                         # OJO Grab is 37s cd
-                        # if time.time() - MeleeCombo[0] > 37.0:
-                        #     # Ojou grab off cd == use
-                        #     keyboard.press_and_release(OjouGrabKey)
-                        #     time.sleep(5.65)
-                        #     keyboard.press_and_release(SuplexKey)
+                        if time.time() - MeleeCombo[0] > 28.0:
+                            # Ojou grab off cd == use
+                            keyboard.press_and_release(NormalPunchKey)
+                            time.sleep(0.1)
+                            keyboard.press_and_release(QueenBeeKey)
 
-                        #     # Start ojou grab CD
-                        #     MeleeCombo[0] = time.time()
-                        # else:
+                            # Start ojou grab CD
+                            MeleeCombo[0] = time.time()
+                        else:
                         # Use other moves in rotation
-                        if MeleeComboCounter > MeleeComboMaxCounter:
-                            MeleeComboCounter = 1
+                            if MeleeComboCounter > MeleeComboMaxCounter:
+                                MeleeComboCounter = 1
 
-                        fun, kwargs = MeleeCombo[MeleeComboCounter]
-                        fun(**kwargs)
-                        time.sleep(0.03)
-                        fun(**kwargs)
-                        MeleeComboCounter+=1
+                            fun, kwargs = MeleeCombo[MeleeComboCounter]
+                            fun(**kwargs)
+                            time.sleep(0.03)
+                            fun(**kwargs)
+                            MeleeComboCounter+=1
                         break
 
     
