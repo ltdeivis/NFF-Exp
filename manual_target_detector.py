@@ -283,8 +283,7 @@ if __name__ == '__main__':
     AoeComboMaxCounter=len(AoeCombo)-1
 
     # Instant combo chain
-    InstantCombo=[0, (flicker_block_jutsu, {'JutsuKey' : SwampUnderworldKey}), (flicker_block_jutsu, {'JutsuKey': SwampBramblesKey}), 
-                     (flicker_block_jutsu, {'JutsuKey': RiverKey})]
+    InstantCombo=[0, (keyboard.press_and_release, {'hotkey' : QueenBeeKey}),(keyboard.press_and_release, {'hotkey' : BoulderKey}), (keyboard.press_and_release, {'hotkey': StoneDragonKey})]
 
     # On key release events
     def on_key_release(event):
@@ -356,7 +355,7 @@ if __name__ == '__main__':
                 for Combo in InstantCombo[1:]:
                     fun, kwargs = Combo
                     fun(**kwargs)
-                    time.sleep(0.03)
+                    time.sleep(0.3)
                     fun(**kwargs)
                     InstantCombo[0] = time.time()
         elif event.name == 'f4':
@@ -434,24 +433,24 @@ if __name__ == '__main__':
                     TileSet, x, y = TileInfo
                     if target_check(Image, TileSet):
                         # OJO Grab is 37s cd
-                        if time.time() - MeleeCombo[0] > 28.0:
-                            # Ojou grab off cd == use
-                            keyboard.press_and_release(NormalPunchKey)
-                            time.sleep(0.1)
-                            keyboard.press_and_release(QueenBeeKey)
+                        # if time.time() - MeleeCombo[0] > 28.0:
+                        #     # Ojou grab off cd == use
+                        #     keyboard.press_and_release(NormalPunchKey)
+                        #     time.sleep(0.1)
+                        #     keyboard.press_and_release(QueenBeeKey)
 
-                            # Start ojou grab CD
-                            MeleeCombo[0] = time.time()
-                        else:
+                        #     # Start ojou grab CD
+                        #     MeleeCombo[0] = time.time()
+                        # else:
                         # Use other moves in rotation
-                            if MeleeComboCounter > MeleeComboMaxCounter:
-                                MeleeComboCounter = 1
+                        if MeleeComboCounter > MeleeComboMaxCounter:
+                            MeleeComboCounter = 1
 
-                            fun, kwargs = MeleeCombo[MeleeComboCounter]
-                            fun(**kwargs)
-                            time.sleep(0.03)
-                            fun(**kwargs)
-                            MeleeComboCounter+=1
+                        fun, kwargs = MeleeCombo[MeleeComboCounter]
+                        fun(**kwargs)
+                        time.sleep(0.03)
+                        fun(**kwargs)
+                        MeleeComboCounter+=1
                         break
 
     
