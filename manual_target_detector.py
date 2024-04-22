@@ -282,6 +282,10 @@ if __name__ == '__main__':
     AoeComboCounter=1
     AoeComboMaxCounter=len(AoeCombo)-1
 
+    # Instant combo chain
+    InstantCombo=[0, (flicker_block_jutsu, {'JutsuKey' : SwampUnderworldKey}), (flicker_block_jutsu, {'JutsuKey': SwampBramblesKey}), 
+                     (flicker_block_jutsu, {'JutsuKey': RiverKey})]
+
     # On key release events
     def on_key_release(event):
         if event.name == 'e':
@@ -338,6 +342,23 @@ if __name__ == '__main__':
             fun(**kwargs)
             AoeComboCounter+=1
             AoeCombo[0] = time.time()
+        elif event.name == 'q':
+            global InstantCombo
+
+            # Check last used over 30s
+            if time.time() - InstantCombo[0] > 30:
+                # First do flicker punch
+                pyautogui.click(clicks=2)
+                time.sleep(0.01)
+                keyboard.press_and_release(NormalPunchKey)
+                time.sleep(0.01)
+
+                for Combo in InstantCombo[1:]:
+                    fun, kwargs = Combo
+                    fun(**kwargs)
+                    time.sleep(0.03)
+                    fun(**kwargs)
+                    InstantCombo[0] = time.time()
         elif event.name == 'f4':
             global KeepRunning
             print("Pausing script... Press F5 to start the script again")
