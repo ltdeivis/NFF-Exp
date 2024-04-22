@@ -1,9 +1,6 @@
 import pyautogui
 import time
 import keyboard
-import win32gui
-import win32con
-import win32api
 import numpy as np
 from multiprocessing import Process, Queue
 from PIL import ImageGrab
@@ -47,8 +44,8 @@ AlternateJutsu='r' # Some jutsus have different forms when alternate key is held
 
 def get_default_set(x,y,w,h):
     # Top left, top right, bottom left, bottom right
-    Pixels=[(x,y+1), (x+1,y+1), (x+2, y+1), (x,y+2), (x,y+3), 
-            (x+w,y+1), (x+w-1,y+1), (x+w-2,y+1), (x+w,y+2), (x+w,y+3), 
+    Pixels=[(x,y), (x+1,y), (x+2, y), (x,y+1), (x,y+2), 
+            (x+w,y), (x+w-1,y), (x+w-2,y), (x+w,y+1), (x+w,y+2), 
             (x,y+h),(x,y+h-1),(x,y+h-2),(x+1,y+h),(x+2,y+h), 
             (x+w,y+h),(x+w-1,y+h),(x+w-2,y+h),(x+w,y+h-1),(x+w,y+h-2)]
     return Pixels
@@ -280,7 +277,7 @@ if __name__ == '__main__':
                 # base_x, base_y, base_x2, base_y2 = area
                 # base_w = np.abs(base_x - base_x2)
                 # base_h = np.abs(base_y - base_y2)
-                base_x, base_y, base_w, base_h = (694,516,43,43) # DAVID SCREEN SETUP
+                base_x, base_y, base_w, base_h = (694,520,43,43) # DAVID SCREEN SETUP
                 Tiles=get_surrounding_tiles(base_x, base_y, base_w, base_h, radius)
 
                 # DEBUG
@@ -294,13 +291,15 @@ if __name__ == '__main__':
                     TileInfo = (Tile_DefaultSet, tile_x, tile_y)
                     DefaultSet.append(TileInfo)
 
-                    # Check target for each tile
-                    #IsTarget = target_check(Tile_DefaultSet)
-                    #print(f'TILE {tile_x}, {tile_y}, {base_w}, {base_h};  {dx}:{dy}; -- {IsTarget};  P={Part2Time}')
+                #     # Check target for each tile
+                #     area_img = ImageGrab.grab(bbox=(tile_x,tile_y,tile_x+base_w,tile_y+base_h))
+                #     # IsTarget = target_check(Tile_DefaultSet)
+                #     print(f'TILE {tile_x}, {tile_y}, {base_w}, {base_h};  {dx}:{dy};')
 
 
-                    # Save image for DEBUG
-                    #area_img.save(f'./player_dataset/img_{dx}_{dy}.jpg')
+                #     # Save image for DEBUG
+                #     area_img.save(f'./player_dataset/img_{dx}_{dy}.jpg')
+                # break
 
 
                 # Step 2 - Workout tile pixel to game pixel (game is 32x32, scaled to monitor might be bigger like 65x65...)
@@ -320,24 +319,24 @@ if __name__ == '__main__':
                         TileSet, x, y = TileInfo
                         if target_check(Image, TileSet):
                             # OJO Grab is 37s cd
-                            if time.time() - MeleeCombo[0] > 37.0:
-                                # Ojou grab off cd == use
-                                keyboard.press_and_release(OjouGrabKey)
-                                time.sleep(5.65)
-                                keyboard.press_and_release(SuplexKey)
+                            # if time.time() - MeleeCombo[0] > 37.0:
+                            #     # Ojou grab off cd == use
+                            #     keyboard.press_and_release(OjouGrabKey)
+                            #     time.sleep(5.65)
+                            #     keyboard.press_and_release(SuplexKey)
 
-                                # Start ojou grab CD
-                                MeleeCombo[0] = time.time()
-                            else:
-                                # Use other moves in rotation
-                                if MeleeComboCounter > MeleeComboMaxCounter:
-                                    MeleeComboCounter = 1
+                            #     # Start ojou grab CD
+                            #     MeleeCombo[0] = time.time()
+                            # else:
+                            # Use other moves in rotation
+                            if MeleeComboCounter > MeleeComboMaxCounter:
+                                MeleeComboCounter = 1
 
-                                fun, kwargs = MeleeCombo[MeleeComboCounter]
-                                fun(**kwargs)
-                                time.sleep(0.03)
-                                fun(**kwargs)
-                                MeleeComboCounter+=1
+                            fun, kwargs = MeleeCombo[MeleeComboCounter]
+                            fun(**kwargs)
+                            time.sleep(0.03)
+                            fun(**kwargs)
+                            MeleeComboCounter+=1
 
                             break
 
