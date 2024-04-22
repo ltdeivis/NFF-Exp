@@ -183,13 +183,11 @@ def flicker_spam_thread():
 def teleport_and_spike():
     # Double click -> Block -> Single spike
     pyautogui.click(clicks=2)
-    time.sleep(0.03)
+    time.sleep(0.02)
     keyboard.press_and_release(NormalPunchKey)
-    # time.sleep(0.05)
-    # keyboard.press_and_release(NormalPunchKey)
-    time.sleep(0.03)
+    time.sleep(0.02)
     keyboard.press_and_release(SpikeKey)
-    time.sleep(0.03)
+    time.sleep(0.02)
     keyboard.press_and_release(SpikeKey)
 
 def dagger_slash_combo():
@@ -205,6 +203,15 @@ def alternate_jutsu(JutsuKey):
     keyboard.press_and_release(JutsuKey)
     time.sleep(0.05)
     keyboard.release(AlternateJutsu)
+
+def flicker_block_jutsu(JutsuKey):
+    pyautogui.click(clicks=2)
+    time.sleep(0.02)
+    keyboard.press_and_release(NormalPunchKey)
+    time.sleep(0.02)
+    keyboard.press_and_release(JutsuKey)
+    time.sleep(0.02)
+    keyboard.press_and_release(JutsuKey)
 
 
 if __name__ == '__main__':
