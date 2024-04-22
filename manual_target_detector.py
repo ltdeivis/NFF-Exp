@@ -196,6 +196,8 @@ def alternate_jutsu(JutsuKey):
 
 
 if __name__ == '__main__':
+    KeepRunning=True
+
     # MOVE SPAM PROCESS
     MoveSpammer=Process(target=move_spam_thread)
     IsMoveSpammerOn=False
@@ -223,16 +225,18 @@ if __name__ == '__main__':
     MeleeComboCounter=1
     MeleeComboMaxCounter=len(MeleeCombo)-1
 
+    # Aoe / CC moves
+    AoeCombo=[0, (keyboard.press_and_release, {'hotkey' : SwampUnderworldKey}), (keyboard.press_and_release, {'hotkey': SwampBramblesKey}), 
+                 (keyboard.press_and_release, {'hotkey': RiverKey})]
+    AoeComboCounter=1
+    AoeComboMaxCounter=len(AoeCombo)-1
+
     # On key release events
     def on_key_release(event):
         if event.name == 'e':
             global SpikeCombo
             global SpikeComboCounter
             global SpikeMaxComboCounter
-            global IsMoveSpammerOn
-            global MoveSpammer
-            global IsFlickerSpammerOn
-            global FlickerSpammer
 
             # Check time
             if (time.time() - SpikeCombo[0]) > 5.0:
@@ -248,6 +252,8 @@ if __name__ == '__main__':
             SpikeComboCounter+=1
             SpikeCombo[0] = time.time()
         elif event.name == 'g':
+            global IsMoveSpammerOn
+            global MoveSpammer
             if IsMoveSpammerOn:
                 print("MoveSpammer: Killing thread")
                 MoveSpammer.kill()
@@ -257,6 +263,8 @@ if __name__ == '__main__':
                 MoveSpammer.start()
             IsMoveSpammerOn=not IsMoveSpammerOn
         elif event.name == 'h':
+            global IsFlickerSpammerOn
+            global FlickerSpammer
             if IsFlickerSpammerOn:
                 print("FlickerSpammer: Killing thread")
                 FlickerSpammer.kill()
@@ -265,6 +273,24 @@ if __name__ == '__main__':
                 print("FlickerSpammer: starting thread")
                 FlickerSpammer.start()
             IsFlickerSpammerOn=not IsFlickerSpammerOn
+        elif event.name == 'f':
+            global AoeCombo
+            global AoeComboCounter
+            global AoeComboMaxCounter
+
+            if AoeComboCounter > AoeComboMaxCounter:
+                AoeComboCounter = 1
+
+            fun, kwargs = AoeCombo[AoeComboCounter]
+            fun(**kwargs)
+            time.sleep(0.03)
+            fun(**kwargs)
+            AoeComboCounter+=1
+            AoeCombo[0] = time.time()
+        elif event.name == 'f4':
+            global KeepRunning
+            print("Pausing script... Press F5 to start the script again")
+            KeepRunning = not KeepRunning
 
 
     # hook to all key release events
@@ -282,84 +308,74 @@ if __name__ == '__main__':
     # Main loop
     while True:
         time.sleep(0.5)
-        if keyboard.is_pressed("F7"):
-            # Draw rectangle where player tile is (Must make sure it's precise)
-            start_x, start_y, end_x, end_y = draw_rectangle()
-            area = (start_x, start_y, end_x, end_y)
-            print(f"Area {area}")
         if keyboard.is_pressed("F6"):
             print("Closing script...")
             break
         if keyboard.is_pressed("F5"):
-            if area==(0,0,0,1):
-                print("Player tile missing, use F7 to select player tile")
-                continue
-            else:        
-                print("Script started")        
-                # Step 1 - Create tile array and work out surrounding tile coordinates
-                # base_x, base_y, base_x2, base_y2 = area
-                # base_w = np.abs(base_x - base_x2)
-                # base_h = np.abs(base_y - base_y2)
-                base_x, base_y, base_w, base_h = (694,516,43,43) # DAVID SCREEN SETUP
-                Tiles=get_surrounding_tiles(base_x, base_y, base_w, base_h, radius)
+            print("Script started")    
+            KeepRunning = True    
+            # Step 1 - Create tile array and work out surrounding tile coordinates
+            base_x, base_y, base_w, base_h = (694,516,43,43) # DAVID SCREEN SETUP
+            Tiles=get_surrounding_tiles(base_x, base_y, base_w, base_h, radius)
 
-                # DEBUG
-                # Step 1b - Draw rectangles on screen for alanas
-                DefaultSet=[]
-                for Tile in Tiles:
-                    tile_x, tile_y, dx, dy = Tile
+            DefaultSet=[]
+            for Tile in Tiles:
+                tile_x, tile_y, dx, dy = Tile
 
-                    # Step 3 - Workout for each tile where the 4 pixel regions are for target tile corners
-                    Tile_DefaultSet = get_default_set(tile_x, tile_y, base_w, base_h)
-                    TileInfo = (Tile_DefaultSet, tile_x, tile_y)
-                    DefaultSet.append(TileInfo)
+                # Step 3 - Workout for each tile where the 4 pixel regions are for target tile corners
+                Tile_DefaultSet = get_default_set(tile_x, tile_y, base_w, base_h)
+                TileInfo = (Tile_DefaultSet, tile_x, tile_y)
+                DefaultSet.append(TileInfo)
 
-                    # Check target for each tile
-                    #IsTarget = target_check(Tile_DefaultSet)
-                    #print(f'TILE {tile_x}, {tile_y}, {base_w}, {base_h};  {dx}:{dy}; -- {IsTarget};  P={Part2Time}')
+            #     area_img = ImageGrab.grab(bbox=(tile_x, tile_y, tile_x + base_w, tile_y + base_h))
+                
+            #     Image = ImageGrab.grab()
+            #     IsTarget = target_check(Image, Tile_DefaultSet)
+
+            #     print(f'TILE {tile_x}, {tile_y}, {base_w}, {base_h};  {dx}:{dy}; -- {IsTarget}')
 
 
-                    # Save image for DEBUG
-                    #area_img.save(f'./player_dataset/img_{dx}_{dy}.jpg')
+            #     #Save image for DEBUG
+            #     area_img.save(f'./player_dataset/img_{dx}_{dy}.jpg')
 
+            # break
 
-                # Step 2 - Workout tile pixel to game pixel (game is 32x32, scaled to monitor might be bigger like 65x65...)
-                tile_center_x = base_w / 2
-                tile_center_y = base_h / 2
+            # Step 2 - Workout tile pixel to game pixel (game is 32x32, scaled to monitor might be bigger like 65x65...)
+            tile_center_x = base_w / 2
+            tile_center_y = base_h / 2
 
-                KeepRunning=True
-                while KeepRunning:
-                    # DBEUG
-                    # keyboard.press_and_release('1')
+            while KeepRunning:
+                # DBEUG
+                # keyboard.press_and_release('1')
 
-                    # Take screenshot
-                    Image = ImageGrab.grab()
+                # Take screenshot
+                Image = ImageGrab.grab()
 
-                    # Check every tile target regions and do shit once found
-                    for TileInfo in DefaultSet:
-                        TileSet, x, y = TileInfo
-                        if target_check(Image, TileSet):
-                            # OJO Grab is 37s cd
-                            if time.time() - MeleeCombo[0] > 37.0:
-                                # Ojou grab off cd == use
-                                keyboard.press_and_release(OjouGrabKey)
-                                time.sleep(5.65)
-                                keyboard.press_and_release(ConquinaKey)
+                # Check every tile target regions and do shit once found
+                for TileInfo in DefaultSet:
+                    TileSet, x, y = TileInfo
+                    if target_check(Image, TileSet):
+                        # OJO Grab is 37s cd
+                        if time.time() - MeleeCombo[0] > 37.0:
+                            # Ojou grab off cd == use
+                            keyboard.press_and_release(OjouGrabKey)
+                            time.sleep(5.65)
+                            keyboard.press_and_release(ConquinaKey)
 
-                                # Start ojou grab CD
-                                MeleeCombo[0] = time.time()
-                            else:
-                                # Use other moves in rotation
-                                if MeleeComboCounter > MeleeComboMaxCounter:
-                                    MeleeComboCounter = 1
+                            # Start ojou grab CD
+                            MeleeCombo[0] = time.time()
+                        else:
+                            # Use other moves in rotation
+                            if MeleeComboCounter > MeleeComboMaxCounter:
+                                MeleeComboCounter = 1
 
-                                fun, kwargs = MeleeCombo[MeleeComboCounter]
-                                fun(**kwargs)
-                                time.sleep(0.03)
-                                fun(**kwargs)
-                                MeleeComboCounter+=1
+                            fun, kwargs = MeleeCombo[MeleeComboCounter]
+                            fun(**kwargs)
+                            time.sleep(0.03)
+                            fun(**kwargs)
+                            MeleeComboCounter+=1
 
-                            break
+                        break
 
     
     print("Script closed")
