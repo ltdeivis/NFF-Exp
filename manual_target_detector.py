@@ -363,7 +363,7 @@ if __name__ == '__main__':
             print("Script started")    
             KeepRunning = True    
             # Step 1 - Create tile array and work out surrounding tile coordinates
-            base_x, base_y, base_w, base_h = (694,516,43,43) # DAVID SCREEN SETUP
+            base_x, base_y, base_w, base_h = (694,520,43,43) # DAVID SCREEN SETUP
             Tiles=get_surrounding_tiles(base_x, base_y, base_w, base_h, radius)
 
             DefaultSet=[]
