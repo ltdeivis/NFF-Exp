@@ -9,46 +9,48 @@ from pynput.mouse import Listener
 # ====== Skill Keybinds =======
 
 # -- CLAN KEYBINDS --
-OjouGrabKey='p'
+WebShotKey='p'
+MultiWebShotKey='alt+o'
+WebMazeKey='ctrl+o'
+StickyKunaiKey='ctrl+i'
+
+# -- Sub Job Keybindings --
+GatheringLocationKey='l'
+EyeOfKaguraKey='shift+l'
 
 # -- TAI KEYBINDS --
 NormalGrabKey='shift+p'
-SuplexKey='ctrl+p'
-LariatKey='alt+p'
-GuilotineKey='o'
-NormalPunchKey='space'
-RockSmashKey='u'
-ConquinaKey='shift+k'
-LigerBombKey='ctrl+k'
-HorizontalChopKey='alt+k'
+LeafWhirlWindKey='ctrl+p'
+LeafViolentWindKey='alt+p'
+LeafRisingWindKey='o'
+LeafGreatWhirlWindKey='alt+i'
+LeafDynamicEntry='u'
+LeafGreatLightRotation='shift+k'
+RockSmashKey='ctrl+k'
 
 # -- NIN KEYBINDS --
 BoulderKey='shift+o'
-AoeSpikeKey='alt+o'
-SpikeKey='ctrl+o'
-ColumnSpikeKey='ctrl+i'
 EarthWallKey='shift+u'
 SwampUnderworldKey='ctrl+u'
 SwampBramblesKey='alt+u'
 RiverKey='ctrl+j'
 AntLionKey='alt+j'
-MoveStopperKey='j'
-RockCollisionKey='l'
-RockCoffinKey='shift+l'
+MoveStopperSettings=('j', 40)
 PlanetaryOrbKey='alt+l'
 EarthDragonKey='ctrl+l'
 StoneDragonKey='m'
 
 # -- SPAM KEYBINDS --
-FlickerSettings=('i', 2) # every 2s
+FlickerSettings=('i', 1) # every 2s
 # - TOGLE -
 CloneTrickSettings=('shift+i', 8) # every 8s
-CloneSettings=('k', 10)        # every 10s  
-HealthSwapKey='shift+j'    # Turn off 1x1 radius melee moves until this is used then untoggle and turn on melee
+CloneSettings=('k', 10)        # every 10s
+GatheringLocationSettings=('l', 14)  
 
 # -- GENERAL KEYBINDS --
 BlockKey='x'
 StruggleKey='b'
+PunchKey='space'
 AlternateJutsu='r' # Some jutsus have different forms when alternate key is held while using the jutsu key
 
 def get_default_set(x,y,w,h):
@@ -136,12 +138,18 @@ pyautogui.useImageNotFoundException()
 def move_spam_thread():
     global CloneTrickSettings
     global CloneSettings
+    global GatheringLocationSettings
+    global MoveStopperSettings
 
     CloneTrickKey, CloneTrickCD = CloneTrickSettings
     CloneKey, CloneCD = CloneSettings
+    GatheringKey, GatheringCD = GatheringLocationSettings
+    MoveStopperKey, MoveStopperCD = MoveStopperSettings
 
     CloneTrickLastUsed=0
     CloneLastUsed=0
+    GatheringLastUsed=0
+    MoveStopperLastUsed=0
 
     print("MoveSpammer: thread started")
 
@@ -153,6 +161,14 @@ def move_spam_thread():
         if (time.time() - CloneLastUsed) > CloneCD:
             keyboard.press_and_release(CloneKey)
             CloneLastUsed = time.time()
+            time.sleep(0.05)
+        if (time.time() - GatheringLastUsed) > GatheringCD:
+            keyboard.press_and_release(GatheringKey)
+            GatheringLastUsed = time.time()
+            time.sleep(0.05)
+        if (time.time() - MoveStopperLastUsed) > MoveStopperCD:
+            keyboard.press_and_release(MoveStopperKey)
+            MoveStopperLastUsed = time.time()
             time.sleep(0.05)
         
         time.sleep(1)
@@ -172,18 +188,18 @@ def teleport_and_spike():
     # Double click -> Block -> Single spike
     pyautogui.click(clicks=2)
     time.sleep(0.02)
-    keyboard.press_and_release(NormalPunchKey)
+    keyboard.press_and_release(PunchKey)
     time.sleep(0.02)
-    keyboard.press_and_release(SpikeKey)
+    keyboard.press_and_release(MultiWebShotKey)
     time.sleep(0.02)
-    keyboard.press_and_release(SpikeKey)
+    keyboard.press_and_release(MultiWebShotKey)
 
 def dagger_slash_combo():
-    keyboard.press_and_release(NormalPunchKey)
+    keyboard.press_and_release(PunchKey)
     time.sleep(0.01)
-    keyboard.press_and_release(NormalPunchKey)
+    keyboard.press_and_release(PunchKey)
     time.sleep(0.01)
-    keyboard.press_and_release(NormalPunchKey)
+    keyboard.press_and_release(PunchKey)
     time.sleep(0.01)
 
 def alternate_jutsu(JutsuKey):
@@ -195,7 +211,7 @@ def alternate_jutsu(JutsuKey):
 def flicker_block_jutsu(JutsuKey):
     pyautogui.click(clicks=2)
     time.sleep(0.02)
-    keyboard.press_and_release(NormalPunchKey)
+    keyboard.press_and_release(PunchKey)
     time.sleep(0.02)
     keyboard.press_and_release(JutsuKey)
     time.sleep(0.02)
@@ -221,26 +237,27 @@ if __name__ == '__main__':
     #   func(**kwargs)
 
     # AOE Spike ->  DoubleClick + Block + SingleSpike -> ColumnSpike
-    SpikeCombo=[0, (keyboard.press_and_release, {'hotkey' : AoeSpikeKey}), (teleport_and_spike,{}), (keyboard.press_and_release, {'hotkey': ColumnSpikeKey})]
+    SpikeCombo=[0, (teleport_and_spike,{}), (keyboard.press_and_release, {'hotkey' : EarthDragonKey}), (flicker_block_jutsu, {'JutsuKey': StoneDragonKey})]
     SpikeComboCounter=1
     SpikeMaxComboCounter=len(SpikeCombo)-1
 
     # Ojou grab off cd, index 0 is ojou cd, the rest are random moves to use
-    MeleeCombo=[0, (keyboard.press_and_release, {'hotkey' : RockSmashKey}), (keyboard.press_and_release, {'hotkey': GuilotineKey}), 
-                   (keyboard.press_and_release, {'hotkey': LariatKey}), (keyboard.press_and_release, {'hotkey': NormalGrabKey}),
-                   (keyboard.press_and_release, {'hotkey': SuplexKey}), (dagger_slash_combo, {}), (keyboard.press_and_release, {'hotkey': ConquinaKey})]
+    MeleeCombo=[0, (keyboard.press_and_release, {'hotkey' : RockSmashKey}), (keyboard.press_and_release, {'hotkey': LeafWhirlWindKey}), 
+                   (keyboard.press_and_release, {'hotkey': LeafViolentWindKey}), (keyboard.press_and_release, {'hotkey': NormalGrabKey}),
+                   (keyboard.press_and_release, {'hotkey': LeafRisingWindKey}), (keyboard.press_and_release, {'hotkey': LeafGreatWhirlWindKey}), 
+                   (keyboard.press_and_release, {'hotkey': LeafGreatLightRotation}), (keyboard.press_and_release, {'hotkey': LeafDynamicEntry}), 
+                   (keyboard.press_and_release, {'hotkey': MultiWebShotKey})]
     MeleeComboCounter=1
     MeleeComboMaxCounter=len(MeleeCombo)-1
 
     # Aoe / CC moves
-    AoeCombo=[0, (flicker_block_jutsu, {'JutsuKey' : SwampUnderworldKey}), (flicker_block_jutsu, {'JutsuKey': SwampBramblesKey}), 
-                 (flicker_block_jutsu, {'JutsuKey': RiverKey})]
+    AoeCombo=[0, (flicker_block_jutsu, {'JutsuKey' : PlanetaryOrbKey}), (flicker_block_jutsu, {'JutsuKey': SwampUnderworldKey}), 
+                 (flicker_block_jutsu, {'JutsuKey': RiverKey}), (flicker_block_jutsu, {'JutsuKey': SwampBramblesKey})]
     AoeComboCounter=1
     AoeComboMaxCounter=len(AoeCombo)-1
 
     # Instant combo chain
-    InstantCombo=[0, (flicker_block_jutsu, {'JutsuKey' : SwampUnderworldKey}), (flicker_block_jutsu, {'JutsuKey': SwampBramblesKey}), 
-                     (flicker_block_jutsu, {'JutsuKey': RiverKey})]
+    InstantCombo=[0, (flicker_block_jutsu, {'JutsuKey' : AntLionKey})]
 
     # On key release events
     def on_key_release(event):
@@ -306,7 +323,7 @@ if __name__ == '__main__':
                 # First do flicker punch
                 pyautogui.click(clicks=2)
                 time.sleep(0.01)
-                keyboard.press_and_release(NormalPunchKey)
+                keyboard.press_and_release(PunchKey)
                 time.sleep(0.01)
 
                 for Combo in InstantCombo[1:]:
@@ -384,11 +401,11 @@ if __name__ == '__main__':
                     TileSet, x, y = TileInfo
                     if target_check(Image, TileSet):
                         # OJO Grab is 37s cd
-                        if time.time() - MeleeCombo[0] > 37.0:
+                        if time.time() - MeleeCombo[0] > 10.0:
                             # Ojou grab off cd == use
-                            keyboard.press_and_release(OjouGrabKey)
-                            time.sleep(5.65)
-                            keyboard.press_and_release(LigerBombKey)
+                            keyboard.press_and_release(PunchKey)
+                            time.sleep(0.05)
+                            keyboard.press_and_release(WebShotKey)
 
                             # Start ojou grab CD
                             MeleeCombo[0] = time.time()
