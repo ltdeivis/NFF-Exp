@@ -40,7 +40,7 @@ EarthDragonKey='ctrl+l'
 StoneDragonKey='m'
 
 # -- SPAM KEYBINDS --
-FlickerSettings=('i', 2) # every 2s
+FlickerSettings=('i', 1) # every 2s
 # - TOGLE -
 CloneTrickSettings=('shift+i', 8) # every 8s
 CloneSettings=('k', 10)        # every 10s  
@@ -239,8 +239,7 @@ if __name__ == '__main__':
     AoeComboMaxCounter=len(AoeCombo)-1
 
     # Instant combo chain
-    InstantCombo=[0, (flicker_block_jutsu, {'JutsuKey' : SwampUnderworldKey}), (flicker_block_jutsu, {'JutsuKey': SwampBramblesKey}), 
-                     (flicker_block_jutsu, {'JutsuKey': RiverKey})]
+    InstantCombo=[0, (keyboard.press_and_release, {'hotkey' : BoulderKey})]
 
     # On key release events
     def on_key_release(event):
@@ -387,8 +386,9 @@ if __name__ == '__main__':
                         if time.time() - MeleeCombo[0] > 37.0:
                             # Ojou grab off cd == use
                             keyboard.press_and_release(OjouGrabKey)
-                            time.sleep(5.65)
-                            keyboard.press_and_release(LigerBombKey)
+                            #time.sleep(5.65) # PRE NERF
+                            time.sleep(2.80) # POST NERF
+                            keyboard.press_and_release(LariatKey)
 
                             # Start ojou grab CD
                             MeleeCombo[0] = time.time()
