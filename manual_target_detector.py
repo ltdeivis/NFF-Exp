@@ -42,6 +42,7 @@ StoneDragonKey='m'
 
 # -- SPAM KEYBINDS --
 FlickerSettings=('i', 1) # every 2s
+FlickerSettings=('i', 1) # every 2s
 # - TOGLE -
 CloneTrickSettings=('shift+i', 8) # every 8s
 CloneSettings=('k', 10)        # every 10s
@@ -288,6 +289,7 @@ if __name__ == '__main__':
                 MoveSpammer.join()
             else:
                 print("MoveSpammer: starting thread")
+                MoveSpammer=Process(target=move_spam_thread)
                 MoveSpammer.start()
             IsMoveSpammerOn=not IsMoveSpammerOn
         elif event.name == 'h':
@@ -299,6 +301,7 @@ if __name__ == '__main__':
                 FlickerSpammer.join()
             else:
                 print("FlickerSpammer: starting thread")
+                FlickerSpammer=Process(target=flicker_spam_thread)
                 FlickerSpammer.start()
             IsFlickerSpammerOn=not IsFlickerSpammerOn
         elif event.name == 'f':
