@@ -42,7 +42,6 @@ StoneDragonKey='m'
 
 # -- SPAM KEYBINDS --
 FlickerSettings=('i', 1) # every 2s
-FlickerSettings=('i', 1) # every 2s
 # - TOGLE -
 CloneTrickSettings=('shift+i', 8) # every 8s
 CloneSettings=('k', 10)        # every 10s
@@ -238,7 +237,7 @@ if __name__ == '__main__':
     #   func(**kwargs)
 
     # AOE Spike ->  DoubleClick + Block + SingleSpike -> ColumnSpike
-    SpikeCombo=[0, (teleport_and_spike,{}), (keyboard.press_and_release, {'hotkey' : EarthDragonKey}), (flicker_block_jutsu, {'JutsuKey': StoneDragonKey})]
+    SpikeCombo=[0, (teleport_and_spike,{}), (flicker_block_jutsu, {'JutsuKey' : EarthDragonKey}), (flicker_block_jutsu, {'JutsuKey': StoneDragonKey}), (flicker_block_jutsu, {'JutsuKey': BoulderKey})]
     SpikeComboCounter=1
     SpikeMaxComboCounter=len(SpikeCombo)-1
 
@@ -258,10 +257,10 @@ if __name__ == '__main__':
     AoeComboMaxCounter=len(AoeCombo)-1
 
     # Instant combo chain
-    InstantCombo=[0, (flicker_block_jutsu, {'JutsuKey' : AntLionKey})]
+    InstantCombo=[0, (flicker_block_jutsu, {'JutsuKey' : AntLionKey}), (flicker_block_jutsu, {'JutsuKey' : WebMazeKey})]
 
     # On key release events
-    def on_key_release(event):
+    def on_key_release(event): 
         if event.name == 'e':
             global SpikeCombo
             global SpikeComboCounter
