@@ -56,10 +56,10 @@ AlternateJutsu='r' # Some jutsus have different forms when alternate key is held
 
 def get_default_set(x,y,w,h):
     # Top left, top right, bottom left, bottom right
-    Pixels=[(x,y+1), (x+1,y+1), (x+2, y+1), (x,y+2), (x,y+3), 
-            (x+w,y+1), (x+w-1,y+1), (x+w-2,y+1), (x+w,y+2), (x+w,y+3), 
+    Pixels=[(x,y), (x+1,y), (x+2, y), (x,y+1), (x,y+2), 
+            (x+w-1,y), (x+w-2,y), (x+w-3,y), (x+w-1,y+1), (x+w-1,y+2), 
             (x,y+h),(x,y+h-1),(x,y+h-2),(x+1,y+h),(x+2,y+h), 
-            (x+w,y+h),(x+w-1,y+h),(x+w-2,y+h),(x+w,y+h-1),(x+w,y+h-2)]
+            (x+w-1,y+h),(x+w-2,y+h),(x+w-3,y+h),(x+w-1,y+h-1),(x+w-1,y+h-2)]
     return Pixels
 
 def get_transition_set(x,y,w,h):
