@@ -52,7 +52,7 @@ EarthDragonKey='ctrl+l'
 StoneDragonKey='m'
 
 # -- SPAM KEYBINDS --
-FlickerSettings=('i', 2) # every 2s
+FlickerSettings=('i', 1) # every 2s
 # - TOGLE -
 CloneTrickSettings=('shift+i', 8) # every 8s
 CloneSettings=('k', 10)        # every 10s  
