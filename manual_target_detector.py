@@ -9,41 +9,38 @@ from pynput.mouse import Listener
 # ====== Skill Keybinds =======
 
 # -- CLAN KEYBINDS --
-OjouGrabKey='p'
 
-# -- TAI KEYBINDS --
+# -- TAI/SWORD KEYBINDS --
 NormalGrabKey='shift+p'
-SuplexKey='ctrl+p'
-LariatKey='alt+p'
-GuilotineKey='o'
+SwiftSlashKey='ctrl+p'
+ImpaleKey='alt+p'
+RapidSlashKey='o'
 NormalPunchKey='space'
-RockSmashKey='u'
-ConquinaKey='shift+k'
-LigerBombKey='ctrl+k'
-HorizontalChopKey='alt+k'
+DancingSlashKey='u'
+MoonsplitterKey='shift+k'
+EvanScytheKey='ctrl+k'
+EnergyParadeKey='alt+k'
+RappidPunchKey='l'
+SoundLeapingKickKey='shift+l'
 
 # -- NIN KEYBINDS --
-BoulderKey='shift+o'
-AoeSpikeKey='alt+o'
-SpikeKey='ctrl+o'
-ColumnSpikeKey='ctrl+i'
-EarthWallKey='shift+u'
-SwampUnderworldKey='ctrl+u'
-SwampBramblesKey='alt+u'
-RiverKey='ctrl+j'
-AntLionKey='alt+j'
-MoveStopperKey='j'
-RockCollisionKey='l'
-RockCoffinKey='shift+l'
-PlanetaryOrbKey='alt+l'
-EarthDragonKey='ctrl+l'
-StoneDragonKey='m'
+LightningBallKey='shift+o'
+RotatingLightningKey='alt+o'
+BallFangKey='ctrl+o'
+ElectMurderKey='ctrl+i'
+DragonTornadoKey='shift+u'
+CutterKey='ctrl+u'
+RaikiriWolfKey='alt+u'
+ChidoriSenbonKey='ctrl+j'
+CurrentKey='alt+j'
+ThunderRingKey='j'
 
 # -- SPAM KEYBINDS --
 FlickerSettings=('i', 1) # every 2s
 # - TOGLE -
 CloneTrickSettings=('shift+i', 8) # every 8s
 CloneSettings=('k', 10)        # every 10s  
+RingFormationSettings=('shift+m', 20)        # every 10s  
 HealthSwapKey='shift+j'    # Turn off 1x1 radius melee moves until this is used then untoggle and turn on melee
 
 # -- GENERAL KEYBINDS --
@@ -136,12 +133,15 @@ pyautogui.useImageNotFoundException()
 def move_spam_thread():
     global CloneTrickSettings
     global CloneSettings
+    global RingFormationSettings
 
     CloneTrickKey, CloneTrickCD = CloneTrickSettings
     CloneKey, CloneCD = CloneSettings
+    RingKey, RingCD = RingFormationSettings
 
     CloneTrickLastUsed=0
     CloneLastUsed=0
+    RingLastUsed=0
 
     print("MoveSpammer: thread started")
 
@@ -153,6 +153,10 @@ def move_spam_thread():
         if (time.time() - CloneLastUsed) > CloneCD:
             keyboard.press_and_release(CloneKey)
             CloneLastUsed = time.time()
+            time.sleep(0.05)
+        if (time.time() - RingLastUsed) > RingCD:
+            keyboard.press_and_release(RingKey)
+            RingLastUsed = time.time()
             time.sleep(0.05)
         
         time.sleep(1)
@@ -168,15 +172,6 @@ def flicker_spam_thread():
         keyboard.press_and_release(FlickerKey)
         time.sleep(FlickerCD)
 
-def teleport_and_spike():
-    # Double click -> Block -> Single spike
-    pyautogui.click(clicks=2)
-    time.sleep(0.02)
-    keyboard.press_and_release(NormalPunchKey)
-    time.sleep(0.02)
-    keyboard.press_and_release(SpikeKey)
-    time.sleep(0.02)
-    keyboard.press_and_release(SpikeKey)
 
 def dagger_slash_combo():
     keyboard.press_and_release(NormalPunchKey)
@@ -220,54 +215,32 @@ if __name__ == '__main__':
     # for func, kwargs in list:
     #   func(**kwargs)
 
-    # AOE Spike ->  DoubleClick + Block + SingleSpike -> ColumnSpike
-    SpikeCombo=[0, (keyboard.press_and_release, {'hotkey' : AoeSpikeKey}), (teleport_and_spike,{}), (keyboard.press_and_release, {'hotkey': ColumnSpikeKey})]
-    SpikeComboCounter=1
-    SpikeMaxComboCounter=len(SpikeCombo)-1
-
     # Ojou grab off cd, index 0 is ojou cd, the rest are random moves to use
-    MeleeCombo=[0, (keyboard.press_and_release, {'hotkey' : RockSmashKey}), (keyboard.press_and_release, {'hotkey': GuilotineKey}), 
-                   (keyboard.press_and_release, {'hotkey': LariatKey}), (keyboard.press_and_release, {'hotkey': NormalGrabKey}),
-                   (keyboard.press_and_release, {'hotkey': SuplexKey}), (dagger_slash_combo, {}), (keyboard.press_and_release, {'hotkey': ConquinaKey})]
+    MeleeCombo=[0, (keyboard.press_and_release, {'hotkey' : NormalGrabKey}), (keyboard.press_and_release, {'hotkey': SwiftSlashKey}), 
+                   (keyboard.press_and_release, {'hotkey': ImpaleKey}), (keyboard.press_and_release, {'hotkey': RapidSlashKey}), (keyboard.press_and_release, {'hotkey': SoundLeapingKickKey}),
+                   (keyboard.press_and_release, {'hotkey': DancingSlashKey}), (dagger_slash_combo, {}), (keyboard.press_and_release, {'hotkey': MoonsplitterKey}),
+                   (keyboard.press_and_release, {'hotkey': EvanScytheKey}), (keyboard.press_and_release, {'hotkey': RappidPunchKey}), (keyboard.press_and_release, {'hotkey': EnergyParadeKey})]
     MeleeComboCounter=1
     MeleeComboMaxCounter=len(MeleeCombo)-1
 
     # Aoe / CC moves
-    AoeCombo=[0, (flicker_block_jutsu, {'JutsuKey' : SwampUnderworldKey}), (flicker_block_jutsu, {'JutsuKey': SwampBramblesKey}), 
-                 (flicker_block_jutsu, {'JutsuKey': RiverKey})]
+    AoeCombo=[0, (flicker_block_jutsu, {'JutsuKey' : LightningBallKey}), (flicker_block_jutsu, {'JutsuKey': RotatingLightningKey}), 
+                 (flicker_block_jutsu, {'JutsuKey': BallFangKey}), (flicker_block_jutsu, {'JutsuKey': ElectMurderKey}), (flicker_block_jutsu, {'JutsuKey': DragonTornadoKey}),
+                 (flicker_block_jutsu, {'JutsuKey': CutterKey}), (flicker_block_jutsu, {'JutsuKey': RaikiriWolfKey}), (flicker_block_jutsu, {'JutsuKey': ChidoriSenbonKey}),
+                 (flicker_block_jutsu, {'JutsuKey': CurrentKey}), (flicker_block_jutsu, {'JutsuKey': ThunderRingKey})]
     AoeComboCounter=1
     AoeComboMaxCounter=len(AoeCombo)-1
-
-    # Instant combo chain
-    InstantCombo=[0, (keyboard.press_and_release, {'hotkey' : BoulderKey})]
 
     # On key release events
     def on_key_release(event):
         if event.name == 'e':
-            global SpikeCombo
-            global SpikeComboCounter
-            global SpikeMaxComboCounter
-
-            # Check time
-            if (time.time() - SpikeCombo[0]) > 5.0:
-                SpikeComboCounter = 1
-
-            if SpikeComboCounter > SpikeMaxComboCounter:
-                SpikeComboCounter = 1
-
-            fun, kwargs = SpikeCombo[SpikeComboCounter]
-            fun(**kwargs)
-            time.sleep(0.03)
-            fun(**kwargs)
-            SpikeComboCounter+=1
-            SpikeCombo[0] = time.time()
+            return
         elif event.name == 'g':
             global IsMoveSpammerOn
             global MoveSpammer
             if IsMoveSpammerOn:
                 print("MoveSpammer: Killing thread")
                 MoveSpammer.kill()
-                MoveSpammer.join()
             else:
                 print("MoveSpammer: starting thread")
                 MoveSpammer.start()
@@ -278,7 +251,6 @@ if __name__ == '__main__':
             if IsFlickerSpammerOn:
                 print("FlickerSpammer: Killing thread")
                 FlickerSpammer.kill()
-                FlickerSpammer.join()
             else:
                 print("FlickerSpammer: starting thread")
                 FlickerSpammer.start()
@@ -298,22 +270,7 @@ if __name__ == '__main__':
             AoeComboCounter+=1
             AoeCombo[0] = time.time()
         elif event.name == 'q':
-            global InstantCombo
-
-            # Check last used over 30s
-            if time.time() - InstantCombo[0] > 30:
-                # First do flicker punch
-                pyautogui.click(clicks=2)
-                time.sleep(0.01)
-                keyboard.press_and_release(NormalPunchKey)
-                time.sleep(0.01)
-
-                for Combo in InstantCombo[1:]:
-                    fun, kwargs = Combo
-                    fun(**kwargs)
-                    time.sleep(0.03)
-                    fun(**kwargs)
-                    InstantCombo[0] = time.time()
+            return
         elif event.name == 'f4':
             global KeepRunning
             print("Pausing script... Press F5 to start the script again")
@@ -354,27 +311,11 @@ if __name__ == '__main__':
                 TileInfo = (Tile_DefaultSet, tile_x, tile_y)
                 DefaultSet.append(TileInfo)
 
-            #     area_img = ImageGrab.grab(bbox=(tile_x, tile_y, tile_x + base_w, tile_y + base_h))
-                
-            #     Image = ImageGrab.grab()
-            #     IsTarget = target_check(Image, Tile_DefaultSet)
-
-            #     print(f'TILE {tile_x}, {tile_y}, {base_w}, {base_h};  {dx}:{dy}; -- {IsTarget}')
-
-
-            #     #Save image for DEBUG
-            #     area_img.save(f'./player_dataset/img_{dx}_{dy}.jpg')
-
-            # break
-
             # Step 2 - Workout tile pixel to game pixel (game is 32x32, scaled to monitor might be bigger like 65x65...)
             tile_center_x = base_w / 2
             tile_center_y = base_h / 2
 
             while KeepRunning:
-                # DBEUG
-                # keyboard.press_and_release('1')
-
                 # Take screenshot
                 Image = ImageGrab.grab()
 
@@ -382,26 +323,15 @@ if __name__ == '__main__':
                 for TileInfo in DefaultSet:
                     TileSet, x, y = TileInfo
                     if target_check(Image, TileSet):
-                        # OJO Grab is 37s cd
-                        if time.time() - MeleeCombo[0] > 37.0:
-                            # Ojou grab off cd == use
-                            keyboard.press_and_release(OjouGrabKey)
-                            #time.sleep(5.65) # PRE NERF
-                            time.sleep(2.80) # POST NERF
-                            keyboard.press_and_release(LariatKey)
+                        # Use other moves in rotation
+                        if MeleeComboCounter > MeleeComboMaxCounter:
+                            MeleeComboCounter = 1
 
-                            # Start ojou grab CD
-                            MeleeCombo[0] = time.time()
-                        else:
-                            # Use other moves in rotation
-                            if MeleeComboCounter > MeleeComboMaxCounter:
-                                MeleeComboCounter = 1
-
-                            fun, kwargs = MeleeCombo[MeleeComboCounter]
-                            fun(**kwargs)
-                            time.sleep(0.03)
-                            fun(**kwargs)
-                            MeleeComboCounter+=1
+                        fun, kwargs = MeleeCombo[MeleeComboCounter]
+                        fun(**kwargs)
+                        time.sleep(0.03)
+                        fun(**kwargs)
+                        MeleeComboCounter+=1
 
                         break
 
