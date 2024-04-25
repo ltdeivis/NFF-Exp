@@ -243,6 +243,7 @@ if __name__ == '__main__':
                 MoveSpammer.kill()
             else:
                 print("MoveSpammer: starting thread")
+                MoveSpammer=Process(target=move_spam_thread)
                 MoveSpammer.start()
             IsMoveSpammerOn=not IsMoveSpammerOn
         elif event.name == 'h':
@@ -253,6 +254,7 @@ if __name__ == '__main__':
                 FlickerSpammer.kill()
             else:
                 print("FlickerSpammer: starting thread")
+                FlickerSpammer=Process(target=flicker_spam_thread)
                 FlickerSpammer.start()
             IsFlickerSpammerOn=not IsFlickerSpammerOn
         elif event.name == 'f':
