@@ -2,8 +2,9 @@ import pyautogui
 import time
 import keyboard
 import numpy as np
+import dxcam
 from multiprocessing import Process
-from PIL import ImageGrab
+from PIL import ImageGrab, Image
 from pynput.mouse import Listener
 
 # ====== Skill Keybinds =======
@@ -324,35 +325,40 @@ if __name__ == '__main__':
                 TileInfo = (Tile_DefaultSet, tile_x, tile_y)
                 DefaultSet.append(TileInfo)
 
-            #     # DEBUG
-            #     area_img = ImageGrab.grab(bbox=(tile_x, tile_y, tile_x + base_w, tile_y + base_h))
-                
-            #     Image = ImageGrab.grab()
-            #     IsTarget = target_check(Image, Tile_DefaultSet)
-
-            #     print(f'TILE {tile_x}, {tile_y}, {base_w}, {base_h};  {dx}:{dy}; -- {IsTarget}')
-
-
-            #     #Save image for DEBUG
-            #     area_img.save(f'./player_dataset/img_{dx}_{dy}.jpg')
-
-            # break
-
             # Step 2 - Workout tile pixel to game pixel (game is 32x32, scaled to monitor might be bigger like 65x65...)
             tile_center_x = base_w / 2
             tile_center_y = base_h / 2
 
+            # DEBUG MEASURE SPEED
+            loop_count = 0
+            start_time = time.time()
+
+            # Get primary monitor instance
+            camera = dxcam.create()
+            cam_region = (base_x, base_y, base_x + (base_w * 3), base_y + (base_h * 3))
+
             while KeepRunning:
-                # DBEUG
-                # keyboard.press_and_release('1')
+                # DEBUG MEASURE SPEED
+                if time.time() - start_time >= 1:
+                    print(f"Loop has run {loop_count} times in the last second")
+                    loop_count = 0
+                    start_time = time.time()
 
                 # Take screenshot
-                Image = ImageGrab.grab()
+                #TargetImage = ImageGrab.grab()
+                #TargetImage = Image.fromarray(camera.grab(region=cam_region))
+                frame = camera.grab()
+                if frame is None:
+                    continue
+                loop_count += 1
+                TargetImage = Image.fromarray(frame)
+                #print(cam_region)
+                #TargetImage.show()
 
                 # Check every tile target regions and do shit once found
                 for TileInfo in DefaultSet:
                     TileSet, x, y = TileInfo
-                    if target_check(Image, TileSet):
+                    if target_check(TargetImage, TileSet):
                         #print("Target found" + str(time.time()))
                         # OJO Grab is 37s cd
                         if time.time() - MeleeCombo[0] > 18.0:
